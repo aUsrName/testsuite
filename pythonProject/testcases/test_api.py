@@ -1,13 +1,6 @@
 import time
 
-import pytest
 
-#创建fixture固件
-@pytest.fixture(scope='function',autouse=True)
-def exe_sql():
-    print('执行sql语句')
-    yield 'success'
-    print('用例之后执行：关闭数据库')
 
 class TestApi:
 
@@ -23,11 +16,11 @@ class TestApi:
     # def teardown_method(self):
     #     print('每个用例之后操作，每个用例执行一次')
 
-    def test_login(self,exe_sql,base_url):
+    def test_login(self):
         print('登录测试用例')
-        print(exe_sql,base_url)
         # raise Exception('登录用例失败')
 
-    def test_register(self):
+    def test_register(self,exe_order):
         print('注册测试用例')
+
 

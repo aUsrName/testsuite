@@ -41,11 +41,49 @@ fixture固件
     ids='参数化时参数的别名', name='固件别名')
 通过使用yield关键字，可实现前置和后置
 注意yield的返回值，手动调才能取到
+一般取值都是在函数级别（scope作用域为function）使用，手动执行
+类级别的一般不用，且类级别的一般autouse为True
+一般除了函数级别，都是自动执行
 scope:
     function 函数，也就是用例，默认为这个
     class 类
     module 模块，py文件
     session 会话，所有用例
+session级别会跨模块生效，但也受fixture写在的模块文件的位置影响
+生效范围是.ini文件中testpaths写的位置，如果没写，则是项目所有用例文件
+function和session级别用最多
+
 autouse：默认为false，手动，要使用的时候就在用例参数加固件名字
          如：def test_login(self,exe_sql)
-         如果为True，则自动给用例使用
+         如果为True，则自动给用例使用,一般自动执行使用较多
+手动给一个类调用fixture，就在类上方加@pytest.mark.usefixtures('')
+函数的手动调用是在用例的参数里面传入固件名称
+类的手动调用是在类的上方加上手动调用的装饰器
+
+params：参数化，一般是函数级别，手动执行，自动执行的一般用不到参数化scope='function',autouse=False
+    值：list或者tuple，字典列表（列表里面值是字典），字典元组（元组里面值是字典）
+    使用参数化，固件中要加request def exe_sql(request):表示接收params的数据
+    并且在yield后面返回 request.param，这几个名字是固定的
+    这样手动执行时，依次传入params的数据到手动调用的用例，两个参数就传两次，执行两次
+    def test_login(self,exe_sql):
+        print('登录测试用例,%s' %exe_sql)
+    这个参数化使用很少
+ids: 使用参数化时给参数加别名，如@pytest.fixture(scope = 'function', autouse=False, params=['登录成功','登录失败'],ids=['成功','失败'])
+name: 固件别名，如 name='sql',这样用例手动传入时，固件名就要改成sql，作用就是简化固件的名字
+    一旦有了别名，固件名就失效了，只能用别名
+
+fixture固件一般结合conftest.py文件使用，与用例分开,conftest名字是固定的，是固件的容器
+    使用conftest里的fixture固件，不需要导包，直接用即可
+    固件可以有多个
+    用例也可以调用多个固件，谁先调用，谁先执行
+    def test_login(self,exe_sql,exe_order):
+        print('登录测试用例,%s' %exe_sql)
+        print('登录测试用例,%s' % exe_order)
+    testcases/test_api.py::TestApi::test_login 用例之前，执行sql语句
+        用例之前，订单之前
+        登录测试用例,None
+        登录测试用例,None
+        PASSED用例之后：订单之后
+        用例之后执行：关闭数据库
+    conftest.py文件也可以有多个，外层conftest文件优先级比内层的高（针对自动）
+        此时不用手动，自动执行，外层的固件会先执行
