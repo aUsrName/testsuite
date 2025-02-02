@@ -1,0 +1,51 @@
+pytest
+-vs   -v详细信息  -s调试信息
+
+pytest-html
+--html  生成html报告  如：--html=./reports/r.html
+
+pytest-xdist
+-n  多线程运行  如-n=2,两个线程运行
+
+pytest-ordering     改变用例执行顺序，主要针对冒烟用例提前执行
+@pytest.mark.run(order=1)
+
+pytest-rerunfailures  失败用例重跑，对于ui自动化元素定位不稳定使用
+--reruns=2   失败重跑两次
+
+pytest-base_url    基础路径(fixure固件有关，就是一个固件)
+用的时候用base_url
+
+allure-pytest    生成美观的allure报告
+
+
+
+其他
+-x   只要有一个用例运行失败就停止运行
+--maxfail=2  只要有N个用例失败就停止运行，如2就是两个
+-k   根据测试用例的字符串去选择用例运行，如-k 'user'
+
+标记
+1、ini中注册标记，markers
+2、测试用例打标记 @pytest.mark.标记名
+3、在pytest.ini加运行时参数，-m '标记名'或者-m '标记名 or 标记名'
+
+用例的前后置操作
+def setup_class
+def teardown_class
+def setup_method
+def teardown_method
+
+fixture固件
+@pytest.fixture(scope='作用域',autouse='自动/手动',params='参数化'
+    ids='参数化时参数的别名', name='固件别名')
+通过使用yield关键字，可实现前置和后置
+注意yield的返回值，手动调才能取到
+scope:
+    function 函数，也就是用例，默认为这个
+    class 类
+    module 模块，py文件
+    session 会话，所有用例
+autouse：默认为false，手动，要使用的时候就在用例参数加固件名字
+         如：def test_login(self,exe_sql)
+         如果为True，则自动给用例使用
