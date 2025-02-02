@@ -1,3 +1,5 @@
+需要的三方插件都放到requirements.txt中，使用pip install -r requirements.txt安装
+
 pytest
 -vs   -v详细信息  -s调试信息
 
