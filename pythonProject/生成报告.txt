@@ -1,0 +1,5 @@
+1、插件 allure-pytest
+2、下载文件 zip
+github.com/allure-framework/allure/releases
+    配置环境变量 path  bin路径，如E:\api-frame\pythonProject\allure-2.23.1\bin
+3、重启pycharm验证是否成功
