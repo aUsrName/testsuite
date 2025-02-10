@@ -1,0 +1,4 @@
+"Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
+"passed","Thu Feb 06 18:21:33 CST 2025","Thu Feb 06 18:21:33 CST 2025","0","testcases","test_api","TestApi","","","test_login",""
+"passed","Thu Feb 06 18:21:33 CST 2025","Thu Feb 06 18:21:33 CST 2025","1","testcases","test_beta","Test0202","","","test_0202",""
+"passed","Thu Feb 06 18:21:33 CST 2025","Thu Feb 06 18:21:33 CST 2025","0","testcases","test_api","TestApi","","","test_register",""

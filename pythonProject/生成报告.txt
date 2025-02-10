@@ -1,5 +1,25 @@
+环境
 1、插件 allure-pytest
 2、下载文件 zip
 github.com/allure-framework/allure/releases
     配置环境变量 path  bin路径，如E:\api-frame\pythonProject\allure-2.23.1\bin
-3、重启pycharm验证是否成功
+3、重启pycharm验证是否成功   dos pycharm
+    allure --version
+
+生成allure报告
+1、生成临时的json报告   .ini
+    allure临时json报告,如放到temps，--clean-alluredir,每次生成清理文件夹
+    --alluredir=temps --clean-alluredir
+
+2、根据json生成html的allure报告  run.py
+    allure命令，从temps生成，output到reports下，每次进行清空
+    os.system('allure generate ./temps -o ./reports --clean')
+
+企业级allure报告定制
+1、企业logo定制
+修改allure文件的配置文件，allure/config/allure.yml
+改的插件位置是allure/plugins/custom-logo-plugin,名字加到allure.yml
+文件在static里 \allure-2.29.0\plugins\custom-logo-plugin
+名字在style.css  background: url('custom-logo.svg') no-repeat left center !important;
+更改样式同理
+2、
