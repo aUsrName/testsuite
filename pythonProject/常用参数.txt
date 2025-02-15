@@ -64,7 +64,7 @@ autouse：默认为false，手动，要使用的时候就在用例参数加固�
 
 params：参数化，一般是函数级别，手动执行，自动执行的一般用不到参数化scope='function',autouse=False
     值：list或者tuple，字典列表（列表里面值是字典），字典元组（元组里面值是字典）
-    使用参数化，固件中要加request def exe_sql(request):表示接收params的数据
+    使用参数化，固件中要加request， def exe_sql(request):表示接收params的数据
     并且在yield后面返回 request.param，这几个名字是固定的
     这样手动执行时，依次传入params的数据到手动调用的用例，两个参数就传两次，执行两次
     def test_login(self,exe_sql):
