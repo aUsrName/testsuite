@@ -34,6 +34,15 @@ class TestApi:
     @allure.story('接口名称：登录接口')
     @allure.title('用例名称：验证登录接口失败')
     def test_login2(self):
+        #加入测试用例步骤,加测试附件（错误截图）
+        for i in range(1, 6):
+            with allure.step(f'第{i}步'):
+                print(f'步骤{i}')
+        with allure.step('第7步：步骤7'):
+            with open('D:\\aaa.jpg',mode='rb') as f:
+                allure.attach(body=f.read(),name='第7步图片',attachment_type=allure.attachment_type.JPG)
+        #接口自动化加请求方式、路径等
+        allure.attach(body='get',name='请求方法',attachment_type=allure.attachment_type.TEXT)
         print('登录测试失败用例')
         # raise Exception('登录用例失败')
 
