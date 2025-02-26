@@ -11,7 +11,7 @@ yaml的语法规则
 使用缩进表示层级
 使用 # 注释
 null表示None
-字符串一般不需要使用引号，如果有特殊表达式需要使用引号（可以是单引或双引）
+字符串一般不需要使用引号，如果有特殊表达式需要使用引号（可以是单引或双引），如果单引号中有特殊符号如 \n，会被加上转义符
 
 文件读取一般是创建一个文件包，如commands，创建python文件，如yaml_util.py来操作
 需要pyyaml库
@@ -42,7 +42,7 @@ null表示None
     也可以用json格式写成：
     测试: {'测试': [{'data1': '字符串'}, {'data2': True}, {'data3': 88}]}
 
-强制类型转换，比较鸡肋，不好用,转的时候要注意格式之间能不能转
+强制类型转换，比较鸡肋，不好用,转的时候要注意格式之间能不能转，很多情况下转不了
     !!int 变量
     !!str 变量
     !!float 变量
@@ -54,6 +54,115 @@ null表示None
         - data3: !!str 88
         - data4: !!int '88'
 
-引用：对于重复的值不需要重复去写，可以引用已有的值
+引用：对于重复的值不需要重复去写，可以引用已有的值,写的时候要引用的要写在上方，并且用 &变量名 来建立锚点，
+下方使用的时候则用 *变量名 来调用锚点，必须先用&建立，才能用*调用如：
+    ceshi: &ceshi
+        name: 测试
+        age: 18
+    测试:
+        - data1: 字符串
+        - data2: !!str True
+        - data3: !!str 88
+        - data4: !!int '88'
+        - teacher: *ceshi
+这样就在teacher引用了ceshi
+
+<< 表示合并到当前数据，通过 <<: *变量名 ，表示合并，合并到当前数据，当前数据是字典，就合并到字典，
+当前数据是列表，就合并到列表，复杂的配置文件经常用到，如
+    ceshi: &ceshi
+        name: 测试
+        age: 18
+    测试:
+        - data1: 字符串
+        - data2: !!str True
+        - data3: !!str 88
+        - data4: !!int '88'
+        - <<: *ceshi
+这种写法直接把ceshi的内容合并到了测试中
+    ceshi: &ceshi
+        name: 测试
+        age: 18
+    测试:
+        data1: 字符串
+        data2: !!str True
+        data3: !!str 88
+        data4: !!int '88'
+        <<: *ceshi
 
 
+yaml文件的读写和清空
+环境准备需要安装 pyyaml库，pip install pyyaml
+
+读取操作
+def read_yaml(yaml_path):
+    with open(yaml_path, encoding='utf-8') as f:
+        value = yaml.safe_load(f)
+        return value
+
+写入操作
+def write_yaml(yaml_path):
+    # mode  w 覆盖写入，会把原来的清空，a+ 追加写入
+    with open(yaml_path, encoding='utf-8', mode='w') as f:
+        data = {'name':'test'}
+        #一定要加 allow_unicode=True，因为处理中文等要用unicode，避免乱码
+        yaml.safe_dump(data, f, allow_unicode=True)
+
+清空操作，该操作对所有文件都适用
+def clean_yaml(yaml_path):
+    #一定要用 w ，表示替换
+    with open(yaml_path, encoding='utf-8', mode='w') as f:
+        pass
+
+
+读取操作在框架、自动化，会和数据驱动配套使用，parametrize数据驱动
+语法规则
+@pytest.mark.parametrize(参数名,参数值)
+参数值为list或者tuple，list或者tuple中有多个值，用例就会执行多次，一般多使用list
+[{'username':'admin','password':'123'},{'username':'admin','password':'admin'},{'username':'123','password':'123'}]
+使用的参数值会在allure报告中写咋参数里，如
+是读yaml文件的数据
+yaml：
+-
+  username: 'admin'
+  password: '123'
+-
+  username: 'admin'
+  password: 'admin'
+-
+  username: '123'
+  password: '123'
+读取yaml文件时，路径是执行文件的相对路径，如这里是run.py所在位置找的yaml路径
+class Test0202:
+    @pytest.mark.parametrize('caseinfo',read_yaml('./testcases/test_api.yaml'))
+    def test_0202(self,caseinfo):
+        print(f'登录测试用例:{caseinfo}')
+
+真正做自动化时，yaml一般自动化用例的基本架构(模块、接口、用例名、请求四要素、响应)：
+这个用例看写法是列表，但调用出来会是字典，因为list会被parametrize解包，用例在列表中是一个字典
+list套字典，把外层list解包，实现数据驱动
+-
+  feature: 正例1：接口所属模块
+  story: 接口名称
+  title: 用例标题
+  request:
+    method: get
+    url: http://www.baidu.com
+    headers: 请求头
+    params: 请求参数
+  validate: null
+-
+  feature: 反例2：接口所属模块
+  story: 接口名称
+  title: 用例标题
+  request:
+    method: get
+    url: http://www.baidu.com
+    headers: 请求头
+    params: 请求参数
+  validate: null
+
+parametrize第二种用法(不常用)：parametrize把list解包，这种多个变量接收数据会把列表内部list解包
+这种是list嵌套list才能用，list里面是字典不能用
+    @pytest.mark.parametrize('name,age',[['test1','11'],['test2','22']])
+    def test_register(self,name,age):
+        print('注册测试用例:%s' % name,age)
