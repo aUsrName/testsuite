@@ -1,0 +1,131 @@
+python+requests+pytest+yaml+allure+logging+jenkins
+
+http协议
+请求
+    请求行：请求方式、请求路径、协议
+    请求头：
+        Content-Type(重要)：客户端发送的数据格式
+            application/x-www-form-urlencoded 表单
+            application/json json数据
+            multipart/form-data 文件上传
+            application/octrent-stream 二进制文件上传
+        Accept：接收的数据格式
+        X-Requested-with:异步请求
+        user-agent:客户端类型
+        cookie:cookie信息
+    请求正文：请求数据
+
+响应
+    响应行：状态码、状态信息
+    响应头：同请求头
+    响应正文：响应数据
+
+
+requests详解
+环境：pip install requests
+
+发送请求三种方式：
+第一种：底层代码就是调用了第二种请求方式
+requests.get(url, params=None, **kwargs)
+requests.post(url, data=None, json=None, **kwargs)
+delete(url, **kwargs)
+put(url, data=None, **kwargs)
+requests.请求方式(参数)
+
+第二种：底层代码就是调用第三种请求方式
+requests.request(method, url, **kwargs)
+
+第三种：
+params、data、files、json需要记住，跟请求头注意对应，到cookies为止都常用
+requests.session.request(self,
+        method,                      请求方式
+        url,                         请求路径
+        params=None,                 paramns参数：查询字符串参数，接口路径后面以？传递的参数，多个参数之间用&分隔
+        data=None,                   data参数：表单参数   content-type:application/x-www-form-urlencoded
+        files=None,                  file参数：文件参数   content-type:multipart/form-data 文件上传
+        json=None,                   json参数：json参数   content-type:application/json json数据
+        headers=None,                请求头
+        cookies=None,                cookie信息
+        auth=None,                   鉴权
+        timeout=None,                超时
+        allow_redirects=True,        重定向
+        proxies=None,                代理
+        hooks=None,                  钩子
+        stream=None,                 文件下载
+        verify=None,                 证书验证
+        cert=None,)                  CA证书
+
+联系：第一种调用第二种，第二种调用第三种，调用链
+区别：第三种能自动处理有cookie关联的接口，前两种都不行，都是单独的请求（类似jmeter里http cookie管理器的功能）
+
+
+发送请求的参数细节，结合抓包查看请求头变化
+1、params传参：查询字符串参数
+1）传参方式：接口路径后面以？传递的参数，多个参数之间用&分隔
+2）传参细节：对参数内容进行urlencode编码（内容以ascii码的方式呈现），目的是解决中文乱码问题
+def test_login(self):
+    params={
+        'name1':'test1',
+        'name2':'测试'
+    }
+    requests.get(url='http://url',params=params)
+
+2、data传参：form表单参数
+def test_login(self):
+    datas={
+        'name1':'test1',
+        'name2':'测试'
+    }
+    requests.get(url='http://url',data=datas)
+1）添加了请求头：content-type:application/x-www-form-urlencoded
+2）对参数内容进行urlencode编码（内容以ascii码的方式呈现）
+
+3、json传参：json参数
+def test_login(self):
+    datas={
+        'name1':'test1',
+        'name2':'测试'
+    }
+    requests.get(url='http://url',json=datas)
+1）添加请求头：content-type:application/json
+2）对参数内容进行unicode编码
+
+4、files传参：文件参数
+1）添加请求头：content-type:multipart/form-data
+2）构建了一个表单参数，把文件的内容以二进制的方式加到body里面
+两种文件上传方式：大部分都是第一种
+第一种：打开一个已经存在的文件上传,需要open打开，内容以二进制可读rb上传
+def test_login(self):
+    datas={
+        'uploads':open('d:/a.png','rb')      #路径中斜线向左是一根，向右是两根，因为向右是转义符
+    }
+    requests.get(url='http://url',files=datas)
+第二种：没有文件自己构建文件，传文件名、文件内容、文件格式,格式拿不准查百度
+def test_login(self):
+    datas={
+        'uploads':('a.png','sdfdsfds文件内容','image/png') #没有文件自己构建文件，传文件名、文件内容、文件格式
+    }
+    requests.get(url='http://url',files=datas)
+上传多个文件：可打开现有的，可自行创建，可混合
+def test_login(self):
+    datas={
+        'files':open('d:/a.png','rb')
+        'uploads':('a.png','sdfdsfds文件内容','image/png')
+    }
+    requests.get(url='http://url',files=datas)
+同时传递表单参数和文件参数：因为上传文件也构建了表单参数，因此两个可以一起传
+此时表单不会进行urlencode编码
+def test_login(self):
+    data1={
+        'name1':'test1',
+        'name2':'测试'
+    }
+    data2={
+        'files':open('d:/a.png','rb')
+        'uploads':('a.png','sdfdsfds文件内容','image/png')
+    }
+    requests.get(url='http://url',data = data1, files=data2)
+
+requests库的response对象的属性和方法
+
+
