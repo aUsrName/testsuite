@@ -127,5 +127,55 @@ def test_login(self):
     requests.get(url='http://url',data = data1, files=data2)
 
 requests库的response对象的属性和方法
+def test_login(self):
+    res=requests.get(url='http://url')
+属性：
+res.text                                返回字符串类型数据
+res.content                             返回二进制类型数据
+res.status_code                         状态码
+res.reason                              状态信息
+res.cookies                             cookie信息
+res.encoding                            编码格式
+res.headers                             响应头
+res.elapsed                             耗时
+res.request.method                      请求方式
+res.request.url                         请求路径
+res.request.headers                     请求头
+res.request.body                        请求数据
 
+方法   这个在封装的时候要注意如何处理，另外不是所有数据都能转，使用时要注意是否可以转换
+res.request.json()                      把json字符串转化为字典格式返回
+
+
+实战
+接口关联：第一个接口的返回值的数据作为第二个接口的参数
+两种方式：
+正则表达式：使用re库，只能提取字符串的数据
+    re.search: 只提取一个值
+    re.findall: 提取多个值
+
+jsonpath表达式：jsonpath
+
+
+import requests
+
+class TestApi:
+    def test_php(self):
+        urls = '11111'
+        res = request.get(url = urls)
+        print(res.text)
+        assert '123' in res.text
+    def test_login(self):
+        urls = '22222'
+        datas = {
+                'username':'admin',
+                'password':'123'
+                'crtstoken':''      #从接口1获取token
+        }
+        headers = {
+                'Accept':'application/json',
+                'X-Requested-With':'XMLHttpRequest'
+        }
+        res = request.post(url = urls,data = datas,headers = headers)
+        print(res.json())
 
