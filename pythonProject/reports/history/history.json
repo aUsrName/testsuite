@@ -1,1 +1,1 @@
-{"0753725f29ec5ace7bfe02b338b118a9":{"statistic":{"failed":0,"broken":0,"skipped":0,"passed":1,"unknown":0,"total":1},"items":[{"uid":"a3a2eb73e606013","status":"passed","time":{"start":1740605088160,"stop":1740605088160,"duration":0}}]}}
+{"0753725f29ec5ace7bfe02b338b118a9":{"statistic":{"failed":0,"broken":1,"skipped":0,"passed":0,"unknown":0,"total":1},"items":[{"uid":"e0a5ed141bc9a18b","status":"broken","statusDetails":"TypeError: get() missing 1 required positional argument: 'url'","time":{"start":1746699909448,"stop":1746699909448,"duration":0}}]}}

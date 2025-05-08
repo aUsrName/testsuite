@@ -60,7 +60,14 @@ autouse：默认为false，手动，要使用的时候就在用例参数加固�
          如果为True，则自动给用例使用,一般自动执行使用较多
 手动给一个类调用fixture，就在类上方加@pytest.mark.usefixtures('')
 函数的手动调用是在用例的参数里面传入固件名称
-类的手动调用是在类的上方加上手动调用的装饰器
+类的手动调用是在类的上方加上手动调用的装饰器  @pytest.mark.usefixtures('固件名')
+作用范围为class级别，使用yeild后面加返回值，如果只在类上加装饰器，用例打印的时候会把
+固件当做函数，打印不出返回值，如果要使用返回值，则要在用例参数也加上固件名，即
+@pytest.mark.usefixtures('固件名')
+class TestApi:
+    def test_aaa(self,固件名)：
+        print(固件名)
+不过一般取值就是在函数级别的手动调用里面
 
 params：参数化，一般是函数级别，手动执行，自动执行的一般用不到参数化scope='function',autouse=False
     值：list或者tuple，字典列表（列表里面值是字典），字典元组（元组里面值是字典）
